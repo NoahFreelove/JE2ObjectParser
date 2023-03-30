@@ -1,10 +1,12 @@
 package org.JE.JE2ObjectParser;
 
+import org.JE.JE2ObjectParser.Annotations.PersistentName;
 import org.JE.JE2ObjectParser.Tokenization.JField;
 import org.JE.JE2ObjectParser.Tokenization.JObject;
 import org.JE.JE2ObjectParser.Tokenization.ResolveToken;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ObjectLoader<T> {
@@ -30,39 +32,100 @@ public class ObjectLoader<T> {
 
     public T parseString(T inputObject, String inputData) {
         String[] lines = inputData.split("\n");
-        JObject object = new JObject(inputObject, inputObject.getClass().getDeclaredFields());
+        JObject object = new JObject(inputObject, inputObject.getClass().getDeclaredFields(),null);
         for (int i = 0; i < lines.length; i+=3) {
             String path = lines[i].replace("Field:","");
             String type = lines[i+1].replace("Type:","");
             String value = lines[i+2].replace("Value:","");
-            fieldResolver(new ResolveToken(type,value,path), object);
+            if(!fieldResolver(new ResolveToken(type,value,path), object)){
+                System.out.println("Unable to resolve field: " + path);
+            }
         }
         return inputObject;
     }
 
-    public void fieldResolver(ResolveToken token, JObject root){
+    public boolean fieldResolver(ResolveToken token, JObject root){
         int depth = token.depth;
         String[] path = token.path.split("\\.");
-        JObject current = root;
-        for (int i = 0; i < depth; i++) {
-            for (JField field : current.fields) {
-                if(field.field.getName().equals(path[i])){
-                    current = field.child;
-                    break;
-                }
-            }
+        JObject current = resolveAnnotation(depth, path, root);
+        if(current == null) {
+            current = resolveByName(depth, path, root);
         }
+
+
+        if(current == null)
+        {
+            return false;
+        }
+
+        return trySetField(token, depth, path, current);
+    }
+
+    private static boolean trySetField(ResolveToken token, int depth, String[] path, JObject current) {
+        /*System.out.println("Trying to set field");
+        System.out.println(Arrays.toString(path));
+        System.out.println(depth);*/
+
         for (JField field : current.fields) {
-            if(field.field.getName().equals(path[depth])){
+            //System.out.println(field.field.getName());
+            if(field.field.getName().equals(path[path.length-1])){
                 try {
                     field.field.set(current.object, getNativeValue(token.type, token.value));
-                    //System.out.println("Set " + field.field.getName() + " to " + field.field.get(current.object));
+                    System.out.println("Set " + field.field.getName() + " to " + field.field.get(current.object));
+                    return true;
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
                 break;
             }
         }
+        return false;
+    }
+
+    private static JObject resolveByName(int depth, String[] path, JObject current) {
+        System.out.println("Trying to resolve by name");
+        JObject parent = current;
+        for (int i = 0; i < depth+1; i++) {
+            boolean found = false;
+            for (JField field : parent.fields) {
+                //System.out.println(field.field.getName() + " " +i + " " + path[i]);
+                if(field.field.getName().equals(path[i])){
+                    parent = field.getParentOrChild();
+                    found = true;
+                    break;
+                }
+            }
+            if(!found)
+                return null;
+        }
+        System.out.println("Resolved By Name!");
+
+        return parent;
+    }
+
+    private static JObject resolveAnnotation(int depth, String[] path, JObject current) {
+        System.out.println("Trying to resolve by annotation");
+        JObject parent = current;
+        for (int i = 0; i < depth+1; i++) {
+            boolean found = false;
+            for (JField field : parent.fields) {
+                // Check if any fields have the @PersistentName annotation and use that instead of the field name if it matches
+                if(field.field.isAnnotationPresent(PersistentName.class)){
+                    PersistentName annotation = field.field.getAnnotation(PersistentName.class);
+                    if(annotation.name().equals(path[i])){
+                        // set path to the name of the field
+                        path[i] = field.field.getName();
+                        parent = field.getParentOrChild();
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if(!found)
+                return null;
+        }
+        System.out.println("Resolved By Annotation!");
+        return parent;
     }
 
     private static Object getNativeValue(String type, String input){
@@ -75,8 +138,12 @@ public class ObjectLoader<T> {
             case "byte" -> Byte.parseByte(input);
             case "boolean" -> Boolean.parseBoolean(input);
             case "char" -> input.charAt(0);
-            case "String" -> input;
+            case "string" -> input;
             default -> null;
         };
+    }
+
+    private static boolean isPrimitive(Object input){
+        return input instanceof Integer || input instanceof Double || input instanceof Float || input instanceof Long || input instanceof Short || input instanceof Byte || input instanceof Boolean || input instanceof Character || input instanceof String;
     }
 }

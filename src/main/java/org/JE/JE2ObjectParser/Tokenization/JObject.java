@@ -6,9 +6,11 @@ import java.lang.reflect.Modifier;
 public class JObject {
     public JField[] fields;
     public Object object;
+    public Field fieldOf;
 
-    public JObject(Object object, Field[] fields){
+    public JObject(Object object, Field[] fields, Field fieldOf){
         this.object = object;
+        this.fieldOf = fieldOf;
         if(object == null){
             this.fields = new JField[0];
             return;
