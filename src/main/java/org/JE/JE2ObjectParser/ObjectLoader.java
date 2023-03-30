@@ -6,7 +6,6 @@ import org.JE.JE2ObjectParser.Tokenization.JObject;
 import org.JE.JE2ObjectParser.Tokenization.ResolveToken;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ObjectLoader<T> {
@@ -47,10 +46,7 @@ public class ObjectLoader<T> {
     public boolean fieldResolver(ResolveToken token, JObject root){
         int depth = token.depth;
         String[] path = token.path.split("\\.");
-        JObject current = resolveAnnotation(depth, path, root);
-        if(current == null) {
-            current = resolveByName(depth, path, root);
-        }
+        JObject current = resolve(depth, path, root);
 
 
         if(current == null)
@@ -82,32 +78,13 @@ public class ObjectLoader<T> {
         return false;
     }
 
-    private static JObject resolveByName(int depth, String[] path, JObject current) {
-        System.out.println("Trying to resolve by name");
-        JObject parent = current;
-        for (int i = 0; i < depth+1; i++) {
-            boolean found = false;
-            for (JField field : parent.fields) {
-                //System.out.println(field.field.getName() + " " +i + " " + path[i]);
-                if(field.field.getName().equals(path[i])){
-                    parent = field.getParentOrChild();
-                    found = true;
-                    break;
-                }
-            }
-            if(!found)
-                return null;
-        }
-        System.out.println("Resolved By Name!");
 
-        return parent;
-    }
-
-    private static JObject resolveAnnotation(int depth, String[] path, JObject current) {
+    private static JObject resolve(int depth, String[] path, JObject current) {
         System.out.println("Trying to resolve by annotation");
         JObject parent = current;
         for (int i = 0; i < depth+1; i++) {
             boolean found = false;
+            // We want to resolve by annotation before we resolve by name
             for (JField field : parent.fields) {
                 // Check if any fields have the @PersistentName annotation and use that instead of the field name if it matches
                 if(field.field.isAnnotationPresent(PersistentName.class)){
@@ -115,6 +92,15 @@ public class ObjectLoader<T> {
                     if(annotation.name().equals(path[i])){
                         // set path to the name of the field
                         path[i] = field.field.getName();
+                        parent = field.getParentOrChild();
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if(!found){
+                for (JField field : parent.fields) {
+                    if(field.field.getName().equals(path[i])){
                         parent = field.getParentOrChild();
                         found = true;
                         break;

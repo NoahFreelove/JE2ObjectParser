@@ -1,3 +1,3 @@
-Field:coolField!
+Field:sub.str
 Type:string
-Value:"This better work!"
+Value:"This should work!"

@@ -7,7 +7,7 @@ public class Main {
         try {
             ObjectLoader<TestObject> objectLoader = new ObjectLoader<>();
             TestObject loaded = objectLoader.parseFromFile(new TestObject(),"Object.txt");
-            System.out.println(loaded.stringField2);
+            System.out.println(loaded.sub.str);
 
         }catch (Exception e){
             System.out.println(e.getMessage());
