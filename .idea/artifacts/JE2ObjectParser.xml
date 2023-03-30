@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JE2ObjectParser">
+    <output-path>$PROJECT_DIR$/out/artifacts/JE2ObjectParser</output-path>
+    <root id="archive" name="JE2ObjectParser.jar">
+      <element id="module-output" name="JE2ObjectParser" />
+    </root>
+  </artifact>
+</component>

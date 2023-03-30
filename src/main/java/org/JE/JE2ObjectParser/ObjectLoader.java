@@ -6,6 +6,7 @@ import org.JE.JE2ObjectParser.Tokenization.JObject;
 import org.JE.JE2ObjectParser.Tokenization.ResolveToken;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ObjectLoader<T> {
@@ -31,7 +32,7 @@ public class ObjectLoader<T> {
 
     public T parseString(T inputObject, String inputData) {
         String[] lines = inputData.split("\n");
-        JObject object = new JObject(inputObject, inputObject.getClass().getDeclaredFields(),null);
+        JObject object = new JObject(inputObject, inputObject.getClass().getDeclaredFields(),null,null);
         for (int i = 0; i < lines.length; i+=3) {
             String path = lines[i].replace("Field:","");
             String type = lines[i+1].replace("Type:","");
@@ -54,10 +55,10 @@ public class ObjectLoader<T> {
             return false;
         }
 
-        return trySetField(token, depth, path, current);
+        return trySetField(token, path, current);
     }
 
-    private static boolean trySetField(ResolveToken token, int depth, String[] path, JObject current) {
+    private static boolean trySetField(ResolveToken token, String[] path, JObject current) {
         /*System.out.println("Trying to set field");
         System.out.println(Arrays.toString(path));
         System.out.println(depth);*/
@@ -80,7 +81,6 @@ public class ObjectLoader<T> {
 
 
     private static JObject resolve(int depth, String[] path, JObject current) {
-        System.out.println("Trying to resolve by annotation");
         JObject parent = current;
         for (int i = 0; i < depth+1; i++) {
             boolean found = false;
@@ -110,7 +110,7 @@ public class ObjectLoader<T> {
             if(!found)
                 return null;
         }
-        System.out.println("Resolved By Annotation!");
+        System.out.println("Resolved: " + Arrays.toString(path) + "!");
         return parent;
     }
 

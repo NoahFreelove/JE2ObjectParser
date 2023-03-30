@@ -1,3 +1,6 @@
 Field:sub.str
 Type:string
 Value:"This should work!"
+Field:coolField!
+Type:string
+Value:"text2"

@@ -4,7 +4,7 @@ import org.JE.JE2ObjectParser.Annotations.PersistentName;
 
 public class SubObject {
 
-    @PersistentName(name = "str")
+    @PersistentName(name = "strr")
     public String betterField = "betterField";
 
     @PersistentName(name = "betterField")

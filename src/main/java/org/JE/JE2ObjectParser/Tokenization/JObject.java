@@ -2,13 +2,16 @@ package org.JE.JE2ObjectParser.Tokenization;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 
 public class JObject {
     public JField[] fields;
     public Object object;
     public Field fieldOf;
+    public JObject parent;
 
-    public JObject(Object object, Field[] fields, Field fieldOf){
+    public JObject(Object object, Field[] fields, Field fieldOf, JObject parent){
+        this.parent = parent;
         this.object = object;
         this.fieldOf = fieldOf;
         if(object == null){
@@ -36,5 +39,26 @@ public class JObject {
                 e.printStackTrace();
             }
         }
+    }
+    public ArrayList<JField> getChildFields(){
+        ArrayList<JField> fields = new ArrayList<>();
+        for(JField field : this.fields){
+            fields.add(field);
+            fields.addAll(field.getChildFieldsRecursive());
+        }
+        return fields;
+    }
+
+    public String getPathRecursive() {
+        // get the parent path if parent is not null
+        String path = "";
+        if (parent != null) {
+            path = parent.getPathRecursive();
+        }
+        // if this object is a field of another object, add the field name to the path
+        if (fieldOf != null) {
+            path += fieldOf.getName() + ".";
+        }
+        return path;
     }
 }

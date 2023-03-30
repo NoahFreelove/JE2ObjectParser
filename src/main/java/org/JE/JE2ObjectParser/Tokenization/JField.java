@@ -1,6 +1,9 @@
 package org.JE.JE2ObjectParser.Tokenization;
 
+import org.JE.JE2ObjectParser.Annotations.PersistentName;
+
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class JField {
     public JObject parent;
@@ -31,7 +34,7 @@ public class JField {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            child = new JObject(fieldObject, declaredFields, field);
+            child = new JObject(fieldObject, declaredFields, field, parent);
         }
         if(child == null)
             isPrimitive = true;
@@ -42,5 +45,27 @@ public class JField {
             return parent;
         return child;
         //return parent;
+    }
+    public ArrayList<JField> getChildFieldsRecursive(){
+        ArrayList<JField> fields = new ArrayList<>();
+        if(child == null)
+            return fields;
+        for(JField field : child.fields){
+            fields.add(field);
+            fields.addAll(field.getChildFieldsRecursive());
+        }
+        return fields;
+    }
+
+    public String getPath(){
+        if(parent.fieldOf == null)
+            return field.getName();
+        String name = field.getName();
+        // return annotation name if it has it, otherwise return field name
+        if(field.isAnnotationPresent(PersistentName.class)){
+            PersistentName annotation = field.getAnnotation(PersistentName.class);
+            name = annotation.name();
+        }
+        return parent.getPathRecursive()  + name;
     }
 }
