@@ -40,6 +40,8 @@ public class ObjectSaver<T> {
 
         allFields.forEach(jField -> {
             try {
+                if(jField.field.get(jField.getParentOrChild().object) == null)
+                    return;
                 Object primValue = jField.field.get(jField.getParentOrChild().object).toString();
                 // If value is a string, add quotes around it
                 String value;

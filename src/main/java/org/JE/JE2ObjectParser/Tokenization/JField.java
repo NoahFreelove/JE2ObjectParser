@@ -14,6 +14,7 @@ public class JField {
     public JField(JObject parent, Field field){
         this.parent = parent;
         this.field = field;
+        this.field.setAccessible(true);
 
         if(field.getType().isPrimitive() || field.getType() == String.class){
             child = null;

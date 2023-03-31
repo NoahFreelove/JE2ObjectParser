@@ -21,39 +21,41 @@ public class JObject {
             this.fields = new JField[0];
             return;
         }
-        int count = 0;
+        ArrayList<JField> jFields = new ArrayList<>();
         for(Field field : fields){
-            if(!Modifier.isFinal(field.getModifiers())
-            && !Modifier.isStatic(field.getModifiers())
+            if(!Modifier.isStatic(field.getModifiers())
             && !Modifier.isTransient(field.getModifiers())){
-                if(Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers())){
+                if(Modifier.isPrivate(field.getModifiers()) ||
+                        Modifier.isProtected(field.getModifiers()) ||
+                        Modifier.isFinal(field.getModifiers())){
                     Annotation[] annotations = field.getAnnotations();
                     for (Annotation ann : annotations) {
                         if (ann instanceof ForceParserVisible){
                             field.setAccessible(true);
-                            count++;
+                            try {
+                                jFields.add(new JField(this,field));
+                            }
+                            catch (Exception e){
+                                System.out.println("err: " + e.getMessage());
+                                e.printStackTrace();
+                            }
                             break;
                         }
                     }
                 }
                 else {
-                    field.setAccessible(true);
-                    count++;
+                    try {
+                        jFields.add(new JField(this,field));
+                    }
+                    catch (Exception e){
+                        System.out.println("err: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
 
             }
         }
-        this.fields = new JField[count];
-
-        for(int i = 0; i < count; i++){
-            try {
-                this.fields[i] = new JField(this, fields[i]);
-            }
-            catch (Exception e){
-                System.out.println("err: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        this.fields = jFields.toArray(new JField[0]);
     }
     public ArrayList<JField> getChildFields(){
         ArrayList<JField> fields = new ArrayList<>();

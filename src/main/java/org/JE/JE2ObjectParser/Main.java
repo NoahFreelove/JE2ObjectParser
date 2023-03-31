@@ -12,12 +12,12 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
-        /*try {
+        try {
             ObjectSaver<TestObject> objectSaver = new ObjectSaver<>();
             objectSaver.saveToFile(new TestObject(), "Saved.txt");
 
         }catch (Exception e){
             System.out.println(e.getMessage());
-        }*/
+        }
     }
 }

@@ -8,7 +8,7 @@ public class SubObject {
     public String betterField = "betterField";
 
     @PersistentName(name = "betterField")
-    public String str = "str";
+    public String str = null;
 
 
     public SubSubClass subSub = new SubSubClass();

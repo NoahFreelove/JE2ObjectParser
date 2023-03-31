@@ -4,12 +4,9 @@ Value:"This is some text!"
 Field:sub.strr
 Type:string
 Value:"betterField"
-Field:sub.betterField
-Type:string
-Value:"str"
 Field:sub.subSub.doubleTheValues
 Type:double
 Value:0.0
 Field:num
 Type:int
-Value:5
+Value:0

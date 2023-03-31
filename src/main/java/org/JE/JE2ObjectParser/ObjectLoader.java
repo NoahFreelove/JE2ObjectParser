@@ -58,7 +58,7 @@ public class ObjectLoader<T> {
         return trySetField(token, path, current);
     }
 
-    private static boolean trySetField(ResolveToken token, String[] path, JObject current) {
+    private boolean trySetField(ResolveToken token, String[] path, JObject current) {
         /*System.out.println("Trying to set field");
         System.out.println(Arrays.toString(path));
         System.out.println(depth);*/
@@ -71,7 +71,8 @@ public class ObjectLoader<T> {
                     //System.out.println("Set " + field.field.getName() + " to " + field.field.get(current.object));
                     return true;
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    if(logFailures)
+                        e.printStackTrace();
                 }
                 break;
             }
@@ -80,7 +81,7 @@ public class ObjectLoader<T> {
     }
 
 
-    private static JObject resolve(int depth, String[] path, JObject current) {
+    private JObject resolve(int depth, String[] path, JObject current) {
         JObject parent = current;
         for (int i = 0; i < depth+1; i++) {
             boolean found = false;
@@ -114,7 +115,7 @@ public class ObjectLoader<T> {
         return parent;
     }
 
-    private static Object getNativeValue(String type, String input){
+    private Object getNativeValue(String type, String input){
         return switch (type) {
             case "int" -> Integer.parseInt(input);
             case "double" -> Double.parseDouble(input);
@@ -129,7 +130,7 @@ public class ObjectLoader<T> {
         };
     }
 
-    private static boolean isPrimitive(Object input){
+    private boolean isPrimitive(Object input){
         return input instanceof Integer || input instanceof Double || input instanceof Float || input instanceof Long || input instanceof Short || input instanceof Byte || input instanceof Boolean || input instanceof Character || input instanceof String;
     }
 }
