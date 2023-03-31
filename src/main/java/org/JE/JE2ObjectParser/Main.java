@@ -7,8 +7,7 @@ public class Main {
         try {
             ObjectLoader<TestObject> objectLoader = new ObjectLoader<>();
             TestObject loaded = objectLoader.parseFromFile(new TestObject(),"Saved.txt");
-            System.out.println(loaded.sub.str);
-
+            System.out.println(loaded.getNum());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }

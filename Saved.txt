@@ -12,4 +12,4 @@ Type:double
 Value:0.0
 Field:num
 Type:int
-Value:0
+Value:5

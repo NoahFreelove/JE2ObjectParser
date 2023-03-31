@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class ObjectLoader<T> {
 
+    public boolean logFailures = false;
 
     public ObjectLoader() {
 
@@ -37,7 +38,7 @@ public class ObjectLoader<T> {
             String path = lines[i].replace("Field:","");
             String type = lines[i+1].replace("Type:","");
             String value = lines[i+2].replace("Value:","");
-            if(!fieldResolver(new ResolveToken(type,value,path), object)){
+            if(!fieldResolver(new ResolveToken(type,value,path), object) && logFailures){
                 System.out.println("Unable to resolve field: " + path);
             }
         }
@@ -48,7 +49,6 @@ public class ObjectLoader<T> {
         int depth = token.depth;
         String[] path = token.path.split("\\.");
         JObject current = resolve(depth, path, root);
-
 
         if(current == null)
         {
@@ -68,7 +68,7 @@ public class ObjectLoader<T> {
             if(field.field.getName().equals(path[path.length-1])){
                 try {
                     field.field.set(current.object, getNativeValue(token.type, token.value));
-                    System.out.println("Set " + field.field.getName() + " to " + field.field.get(current.object));
+                    //System.out.println("Set " + field.field.getName() + " to " + field.field.get(current.object));
                     return true;
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -110,7 +110,7 @@ public class ObjectLoader<T> {
             if(!found)
                 return null;
         }
-        System.out.println("Resolved: " + Arrays.toString(path) + "!");
+        //System.out.println("Resolved: " + Arrays.toString(path) + "!");
         return parent;
     }
 

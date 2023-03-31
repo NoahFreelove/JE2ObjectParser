@@ -34,9 +34,9 @@ public class ObjectSaver<T> {
 
         JObject object = new JObject(inputObject, inputObject.getClass().getDeclaredFields(),null,null);
         ArrayList<JField> allFields = object.getChildFields();
-        System.out.println("Before primitive filter: " + allFields.size());
+        //System.out.println("Before primitive filter: " + allFields.size());
         allFields.removeIf(field -> !field.isPrimitive);
-        System.out.println("After primitive filter: " + allFields.size());
+        //System.out.println("After primitive filter: " + allFields.size());
 
         allFields.forEach(jField -> {
             try {
@@ -52,7 +52,6 @@ public class ObjectSaver<T> {
 
                 String field = "Field:" + jField.getPath();
                 String type = "Type:" + jField.field.getType().getSimpleName().toLowerCase();
-                System.out.println(field);
                 lines.add(field);
                 lines.add(type);
                 lines.add(value);

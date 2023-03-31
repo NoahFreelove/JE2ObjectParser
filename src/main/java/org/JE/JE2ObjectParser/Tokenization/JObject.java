@@ -1,5 +1,8 @@
 package org.JE.JE2ObjectParser.Tokenization;
 
+import org.JE.JE2ObjectParser.Annotations.ForceParserVisible;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -20,12 +23,24 @@ public class JObject {
         }
         int count = 0;
         for(Field field : fields){
-            if(!Modifier.isPrivate(field.getModifiers())
-                    && !Modifier.isFinal(field.getModifiers())
-                    && !Modifier.isStatic(field.getModifiers())
-                    && !Modifier.isTransient(field.getModifiers())){
-                field.setAccessible(true);
-                count++;
+            if(!Modifier.isFinal(field.getModifiers())
+            && !Modifier.isStatic(field.getModifiers())
+            && !Modifier.isTransient(field.getModifiers())){
+                if(Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers())){
+                    Annotation[] annotations = field.getAnnotations();
+                    for (Annotation ann : annotations) {
+                        if (ann instanceof ForceParserVisible){
+                            field.setAccessible(true);
+                            count++;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    field.setAccessible(true);
+                    count++;
+                }
+
             }
         }
         this.fields = new JField[count];
