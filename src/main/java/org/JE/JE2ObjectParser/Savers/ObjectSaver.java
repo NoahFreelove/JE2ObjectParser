@@ -1,4 +1,4 @@
-package org.JE.JE2ObjectParser;
+package org.JE.JE2ObjectParser.Savers;
 
 import org.JE.JE2ObjectParser.Tokenization.JField;
 import org.JE.JE2ObjectParser.Tokenization.JObject;
@@ -16,8 +16,7 @@ public class ObjectSaver<T> {
 
         try {
             fileWriter = new FileWriter(path);
-            for (String line :
-                    lines) {
+            for (String line : lines) {
                 fileWriter.write(line + "\n");
             }
             fileWriter.close();
@@ -53,7 +52,8 @@ public class ObjectSaver<T> {
                 }
 
                 String field = "Field:" + jField.getPath();
-                String type = "Type:" + jField.field.getType().getSimpleName().toLowerCase();
+                String type = "Type:" + jField.field.getType().getSimpleName().toLowerCase() +
+                        (false? "[]":"");
                 lines.add(field);
                 lines.add(type);
                 lines.add(value);

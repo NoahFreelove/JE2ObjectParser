@@ -1,5 +1,6 @@
 package org.JE.JE2ObjectParser.Tokenization;
 
+import org.JE.JE2.Annotations.ActPublic;
 import org.JE.JE2ObjectParser.Annotations.ForceParserVisible;
 
 import java.lang.annotation.Annotation;
@@ -30,7 +31,7 @@ public class JObject {
                         Modifier.isFinal(field.getModifiers())){
                     Annotation[] annotations = field.getAnnotations();
                     for (Annotation ann : annotations) {
-                        if (ann instanceof ForceParserVisible){
+                        if (ann instanceof ForceParserVisible || ann instanceof ActPublic){
                             field.setAccessible(true);
                             try {
                                 jFields.add(new JField(this,field));

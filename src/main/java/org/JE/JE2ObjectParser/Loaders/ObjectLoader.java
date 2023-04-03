@@ -1,4 +1,4 @@
-package org.JE.JE2ObjectParser;
+package org.JE.JE2ObjectParser.Loaders;
 
 import org.JE.JE2ObjectParser.Annotations.PersistentName;
 import org.JE.JE2ObjectParser.Tokenization.JField;
@@ -43,6 +43,14 @@ public class ObjectLoader<T> {
             }
         }
         return inputObject;
+    }
+
+    public T parseString(T inputObject, String[] data){
+        StringBuilder sb = new StringBuilder();
+        for (String s : data) {
+            sb.append(s).append("\n");
+        }
+        return parseString(inputObject, sb.toString());
     }
 
     public boolean fieldResolver(ResolveToken token, JObject root){

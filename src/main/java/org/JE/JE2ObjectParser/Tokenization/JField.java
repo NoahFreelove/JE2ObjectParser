@@ -9,12 +9,16 @@ public class JField {
     public JObject parent;
     public Field field;
     public boolean isPrimitive = false;
+    public boolean isArray = false;
     public JObject child;
 
     public JField(JObject parent, Field field){
         this.parent = parent;
         this.field = field;
         this.field.setAccessible(true);
+        if(field.getType().isArray()){
+            isArray = true;
+        }
 
         if(field.getType().isPrimitive() || field.getType() == String.class){
             child = null;
@@ -52,8 +56,10 @@ public class JField {
         if(child == null)
             return fields;
         for(JField field : child.fields){
-            fields.add(field);
-            fields.addAll(field.getChildFieldsRecursive());
+            {
+                fields.add(field);
+                fields.addAll(field.getChildFieldsRecursive());
+            }
         }
         return fields;
     }
