@@ -133,7 +133,7 @@ public class ObjectLoader<T> {
             case "byte" -> Byte.parseByte(input);
             case "boolean" -> Boolean.parseBoolean(input);
             case "char" -> input.charAt(0);
-            case "string" -> input;
+            case "string" -> input.substring(1, input.length() - 1);
             default -> null;
         };
     }
