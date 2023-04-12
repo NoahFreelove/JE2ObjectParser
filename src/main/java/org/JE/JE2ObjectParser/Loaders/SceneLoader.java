@@ -2,12 +2,15 @@ package org.JE.JE2ObjectParser.Loaders;
 
 import org.JE.JE2.Objects.GameObject;
 import org.JE.JE2.Objects.Scripts.Base.Script;
+import org.JE.JE2.Resources.DataLoader;
 import org.JE.JE2.Scene.Scene;
 
 import javax.swing.*;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class SceneLoader {
 
@@ -18,7 +21,9 @@ public class SceneLoader {
             if(files != null){
                 for(File file : files){
                     if(file.isFile()){
-                        scene.add(loadObjectFromFile(file.getAbsolutePath()));
+                        // make sure extension is .JEObject
+                        if(file.getName().endsWith(".JEObject"))
+                            scene.add(loadObjectFromFile(file.getAbsolutePath()));
                     }
                 }
             }
@@ -103,6 +108,69 @@ public class SceneLoader {
         }
         catch (Exception ignore){}
         return output.toArray(new String[0]);
+    }
+
+    public static String[] unzipSceneToFolder(String zipPath, String folderPath){
+        ArrayList<String> loadedAssets = new ArrayList<>();
+
+        File dir = new File(folderPath);
+        // create output directory if it doesn't exist
+        if(!dir.exists()) dir.mkdirs();
+        FileInputStream fis;
+        //buffer for read and write data to file
+        byte[] buffer = new byte[1024];
+        try {
+            fis = new FileInputStream(zipPath);
+            ZipInputStream zis = new ZipInputStream(fis);
+            ZipEntry ze = zis.getNextEntry();
+            while(ze != null){
+                String fileName = ze.getName();
+                // if fileName does not end with .JEObject, move it to the resource folder;
+                String resourceFolder = DataLoader.getDataFilePath("/");
+
+                if(!fileName.endsWith(".JEObject")){
+                    File newFile = new File(resourceFolder + File.separator + fileName);
+
+                    String pathFromResourceFolder = newFile.getAbsolutePath().replace(resourceFolder,"");
+                    loadedAssets.add(pathFromResourceFolder);
+                    System.out.println("Unzipping to "+newFile.getAbsolutePath());
+                    //create directories for sub directories in zip
+                    new File(newFile.getParent()).mkdirs();
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                    //close this ZipEntry
+                    zis.closeEntry();
+                    ze = zis.getNextEntry();
+                }
+                else {
+                    File newFile = new File(folderPath + File.separator + fileName);
+                    System.out.println("Unzipping to "+newFile.getAbsolutePath());
+                    //create directories for sub directories in zip
+                    new File(newFile.getParent()).mkdirs();
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                    //close this ZipEntry
+                    zis.closeEntry();
+                    ze = zis.getNextEntry();
+                }
+
+            }
+            //close last ZipEntry
+            zis.closeEntry();
+            zis.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loadedAssets.toArray(new String[0]);
     }
 
 }
