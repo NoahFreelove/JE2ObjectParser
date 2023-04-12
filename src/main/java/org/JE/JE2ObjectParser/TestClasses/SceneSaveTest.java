@@ -28,7 +28,7 @@ public class SceneSaveTest {
         coolScene.add(test);
         coolScene.add(new GameObject(), new GameObject(), new GameObject());
 
-        SceneSaver.saveSceneToFolder(coolScene, "C:\\Users\\s201063813\\Desktop\\JE2ObjectParser\\Scene");
+        SceneSaver.saveSceneToFolder(coolScene, "Scene");
 
         Manager.setScene(coolScene);
         coolScene.setCamera(cam);

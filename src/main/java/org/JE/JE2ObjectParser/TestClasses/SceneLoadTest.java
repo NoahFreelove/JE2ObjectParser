@@ -32,9 +32,9 @@ public class SceneLoadTest {
         helpWindow.children.add(new Label("Press F1 to refresh"));
         coolScene.addUI(helpWindow);
 
-        //String[] loadedAssets = SceneLoader.unzipSceneToFolder("zip.zip","Loaded");
+        String[] loadedAssets = SceneLoader.unzipSceneToFolder("zip.zip","Loaded");
 
-        SceneLoader.loadToScene(coolScene, "C:\\Users\\s201063813\\Desktop\\JE2ObjectParser\\Scene");
+        SceneLoader.loadToScene(coolScene, "Scene");
 
         System.out.println(coolScene.world.gameObjects.get(0).getTransform().position());
         System.out.println(coolScene.world.gameObjects.get(0).getScript(SpriteRenderer.class).getTextureFilepath());
